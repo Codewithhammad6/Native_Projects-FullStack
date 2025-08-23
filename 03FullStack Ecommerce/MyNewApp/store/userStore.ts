@@ -1,0 +1,183 @@
+import { create } from 'zustand';
+import axiosInstance from '../utils/axiosInstance.ts';
+import { Alert } from 'react-native';
+
+const userStore = create((set) => ({
+  user: null,
+  loading: false,
+  isAuth: false,
+
+  //  Get logged-in user profile
+  getUser: async () => {
+    try {
+      set({ loading: true });
+      const { data } = await axiosInstance.get("/user/me");
+
+      set({ 
+        user: data.user, 
+        isAuth: true,
+      });
+    } catch (error) {
+      Alert.alert(error?.response?.data?.message || "Failed to fetch user");
+      set({ isAuth: false, user: null });
+      throw error;
+    } finally {
+      set({ loading: false });
+    }
+  },
+
+  //  Register user
+  register: async (formData,navigation) => {
+    try {
+      set({ loading: true });
+      const { data } = await axiosInstance.post("/user/register", formData);
+   Alert.alert(
+      "Success",
+      "Registration successful, please verify your email",
+      [
+        {
+          text: "OK",
+          onPress: () => navigation.navigate("Login"),
+        },
+      ]
+    );
+      return data;
+    } catch (error) {
+      Alert.alert(error?.response?.data?.message || "Registration failed");
+      throw error;
+    } finally {
+      set({ loading: false });
+    }
+  },
+
+  //  Login user
+  login: async (formData) => {
+    try {
+      set({ loading: true });
+      const { data } = await axiosInstance.post("/user/login", formData);
+
+      set({
+        user: data.user,
+        isAuth: true,
+      });
+
+      Alert.alert("Login Successful");
+      return data;
+    } catch (error) {
+      Alert.alert(error?.response?.data?.message || "Login failed");
+      set({ isAuth: false });
+      throw error;
+    } finally {
+      set({ loading: false });
+    }
+  },
+
+  //  Logout user
+  logout: async () => {
+    try {
+      set({ loading: true });
+      await axiosInstance.get("/user/logout", { withCredentials: true });
+
+      set({
+        user: null,
+        isAuth: false,
+      });
+
+      Alert.alert("Logout Successful");
+    } catch (error: any) {
+      console.error("Logout error:", error);
+      Alert.alert(error?.response?.data?.message || "Logout failed");
+      set({ user: null, isAuth: false });
+    } finally {
+      set({ loading: false });
+    }
+  },
+
+
+
+addAddresses: async (address) => {
+  try {
+    set({ loading: true });
+    const { data } = await axiosInstance.post("/user/addresses",{address});
+    
+    Alert.alert("Success", "Address added successful");
+    return data;
+  } catch (error) {
+    Alert.alert(error?.response?.data?.message || "Address added failed");
+    throw error;
+  } finally {
+    set({ loading: false });
+  }
+},
+
+
+getAddresses: async () => {
+  try {
+    set({ loading: true });
+    const { data } = await axiosInstance.get("/user/getAddresses");
+    return data.addresses;
+  } catch (error) {
+    Alert.alert(error?.response?.data?.message || "Address geting failed");
+    throw error;
+  } finally {
+    set({ loading: false });
+  }
+},
+
+
+
+
+
+addOrders: async (orderData) => {
+  try {
+    set({ loading: true });
+    const { data } = await axiosInstance.post("/order/orders",orderData);
+    return data;
+  } catch (error) {
+    Alert.alert(error?.response?.data?.message || "Order created failed");
+    throw error;
+  } finally {
+    set({ loading: false });
+  }
+},
+
+
+
+
+
+getOrders: async () => {
+  try {
+    set({ loading: true });
+    const { data } = await axiosInstance.get("/order/getOrders");
+    return data.orders;
+  } catch (error) {
+    Alert.alert(error?.response?.data?.message || "Order get failed");
+    throw error;
+  } finally {
+    set({ loading: false });
+  }
+},
+
+
+
+
+
+}));
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+export default userStore;
