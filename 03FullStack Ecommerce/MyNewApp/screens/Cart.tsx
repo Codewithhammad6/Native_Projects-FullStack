@@ -6,14 +6,21 @@ import {
   TextInput,
   Image,
 } from 'react-native';
-import React from 'react';
+import React, { useState } from 'react';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import useCartStore from '../store/useCartStore.ts';
 
 const Cart = ({navigation}) => {
+    const [searchQuery, setSearchQuery] = useState('')
   const { cart, incementQuantity, decrementQuantity, removeFromCart } =
     useCartStore();
   console.log(cart);
+
+  // filter cart item by searchQuery (case-insensitive)
+  const filteredProducts = cart.filter((product) =>
+    product.title.toLowerCase().includes(searchQuery.toLowerCase())
+  )
+
 
   const subtotal = cart
     .map(item => item.price * item.quantity)
@@ -24,35 +31,35 @@ const Cart = ({navigation}) => {
   return (
     <ScrollView style={{ marginTop: 30, flex: 1, backgroundColor: 'white' }}>
       <View
-        style={{
-          backgroundColor: '#4199c7ff',
-          padding: 10,
-          alignItems: 'center',
-          flexDirection: 'row',
-          gap: 9,
-        }}
-      >
-        <Pressable
-          style={{
-            flexDirection: 'row',
-            backgroundColor: 'white',
-            borderRadius: 6,
-            alignItems: 'center',
-            flex: 1,
-            height: 40,
-            paddingHorizontal: 10,
-          }}
-        >
-          <Ionicons name="search" size={20} color="gray" />
-          <TextInput
-            placeholder="Search HL.in"
-            placeholderTextColor="#A9A9A9"
-            style={{ fontSize: 16, flex: 1, marginLeft: 6, color: '#000' }}
-          />
-        </Pressable>
-        <Ionicons name="mic-outline" size={32} color="black" />
-      </View>
-
+                style={{
+                  backgroundColor: '#4199c7ff',
+                  padding: 10,
+                  alignItems: 'center',
+                  flexDirection: 'row',
+                  gap: 9,
+                }}
+              >
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    backgroundColor: 'white',
+                    borderRadius: 6,
+                    alignItems: 'center',
+                    flex: 1,
+                    height: 40,
+                    paddingHorizontal: 10,
+                  }}
+                >
+                  <Ionicons name="search" size={20} color="gray" />
+                  <TextInput
+                    placeholder="Search by name"
+                    placeholderTextColor="#A9A9A9"
+                    style={{ fontSize: 16, flex: 1, marginLeft: 6, color: '#000' }}
+                    value={searchQuery}
+                    onChangeText={(text) => setSearchQuery(text)}
+                  />
+                </View>
+              </View>
       <View style={{ padding: 10, flexDirection: 'row', alignItems: 'center' }}>
         <Text style={{ fontSize: 18, fontWeight: '400' }}>Subtotal : </Text>
         <Text style={{ fontSize: 20, fontWeight: 'bold' }}>Rs.{total}</Text>
@@ -102,7 +109,7 @@ const Cart = ({navigation}) => {
       />
 
       <View style={{ marginHorizontal: 10 }}>
-        {cart?.map((item, index) => (
+        {filteredProducts?.map((item, index) => (
           <View
             key={index}
             style={{

@@ -7,6 +7,8 @@ import {
   ImageBackground,
   Dimensions,
   Text,
+  TouchableOpacity,
+  Share,
 } from 'react-native';
 import React, { useState } from 'react';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -29,41 +31,33 @@ setTimeout(() => {
   setAddedToCart(false)
 }, 60000);
 }
+const offer = item.offer
+ const onShare = async () => {
+    try {
+      const result = await Share.share({
+        message:item.title,
+        url: 'http://10.0.2.2:19000',
+        title: 'Share Product'
+      });
 
+      if (result.action === Share.sharedAction) {
+        if (result.activityType) {
+          console.log("Shared with activity type:", result.activityType);
+        } else {
+          console.log("Shared successfully");
+        }
+      } else if (result.action === Share.dismissedAction) {
+        console.log("Share dismissed");
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
   return (
     <ScrollView
       style={{ marginTop: 25, flex: 1, backgroundColor: 'white' }}
       showsVerticalScrollIndicator={false}
     >
-      <View
-        style={{
-          backgroundColor: '#4199c7ff',
-          padding: 10,
-          alignItems: 'center',
-          flexDirection: 'row',
-          gap: 9,
-        }}
-      >
-        <Pressable
-          style={{
-            flexDirection: 'row',
-            backgroundColor: 'white',
-            borderRadius: 6,
-            alignItems: 'center',
-            flex: 1,
-            height: 40,
-            paddingHorizontal: 10,
-          }}
-        >
-          <Ionicons name="search" size={20} color="gray" />
-          <TextInput
-            placeholder="Search HL.in"
-            placeholderTextColor="#A9A9A9"
-            style={{ fontSize: 16, flex: 1, marginLeft: 6, color: '#000' }}
-          />
-        </Pressable>
-        <Ionicons name="mic-outline" size={32} color="black" />
-      </View>
 
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
         {item.carouselImages.map((item, index) => (
@@ -79,7 +73,8 @@ setTimeout(() => {
                 justifyContent: 'space-between',
               }}
             >
-              <View
+              {offer && (
+ <View
                 style={{
                   width: 40,
                   height: 40,
@@ -98,63 +93,64 @@ setTimeout(() => {
                     fontSize: 12,
                   }}
                 >
-                  20% off
+                  {offer} off
                 </Text>
               </View>
-              <View
-                style={{
-                  width: 40,
-                  height: 40,
-                  borderRadius: 20,
-                  flexDirection: 'row',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  backgroundColor: '#E0E0E0',
-                }}
-              >
-                <Ionicons name="share-social" size={32} color="black" />
-              </View>
+              )}
+             
+              <TouchableOpacity onPress={onShare}>
+        <View
+          style={{
+            width: 40,
+            height: 40,
+            borderRadius: 20,
+            flexDirection: 'row',
+            justifyContent: 'center',
+            alignItems: 'center',
+            backgroundColor: '#E0E0E0',
+          }}
+        >
+          <Ionicons name="share-social" size={25} color="black" />
+        </View>
+      </TouchableOpacity>
             </View>
 
-            <View
-              style={{
-                width: 40,
-                height: 40,
-                borderRadius: 20,
-                flexDirection: 'row',
-                justifyContent: 'center',
-                alignItems: 'center',
-                backgroundColor: '#E0E0E0',
-                marginTop: 'auto',
-                marginLeft: 15,
-                marginBottom: 20,
-              }}
-            >
-              <Ionicons name="heart-outline" size={32} color="black" />
-            </View>
+          
           </ImageBackground>
         ))}
       </ScrollView>
 
       <View style={{ padding: 10 }}>
-        <Text style={{ fontSize: 15, fontWeight: '500' }}>{item.title}</Text>
+        <Text numberOfLines={3} style={{ fontSize: 15, fontWeight: '500' }}>{item.title}</Text>
+        <View style={{flexDirection:'row',gap:10}}>
         <Text style={{ fontSize: 18, fontWeight: '600', marginTop: 6 }}>
           Rs.{item.price}
         </Text>
+        {item.oldPrice && (
+        <Text style={{ fontSize: 18, fontWeight: '400', marginTop: 6 ,color:"gray", textDecorationLine: 'line-through' }}>
+          Rs.{item.oldPrice}
+        </Text>
+        )}
+        </View>
       </View>
+
       <Text
         style={{ height: 1, borderColor: '#D0D0D0', borderWidth: 1 }}
       ></Text>
-
-      <View style={{ flexDirection: 'row', alignItems: 'center', padding: 10 }}>
+{item?.color && (
+ <View style={{ flexDirection: 'row', alignItems: 'center', padding: 10 }}>
         <Text>Color: </Text>
         <Text style={{ fontSize: 15, fontWeight: 'bold' }}>{item.color}</Text>
       </View>
-
-      <View style={{ flexDirection: 'row', alignItems: 'center', padding: 10 }}>
+)}
+     
+{item?.size && (
+ <View style={{ flexDirection: 'row', alignItems: 'center', padding: 10 }}>
         <Text>Size: </Text>
         <Text style={{ fontSize: 15, fontWeight: 'bold' }}>{item.size}</Text>
       </View>
+)}
+     
       <Text
         style={{ height: 1, borderColor: '#D0D0D0', borderWidth: 1 }}
       ></Text>

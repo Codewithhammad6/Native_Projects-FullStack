@@ -6,6 +6,7 @@ import cookieParser from "cookie-parser";
 import { errorMiddleware } from "./middleware/error.js";
 import userRoute from "./routes/userRoute.js";
 import orderRoute from "./routes/orderRoute.js";
+import productRoute from "./routes/productRoute.js";
 import { removeUnverifiedAccounts } from "./automation/removeUnverifiedUser.js";
 
 dotenv.config();
@@ -29,5 +30,6 @@ connectDB();
 
 app.use("/api/user",userRoute)
 app.use("/api/order",orderRoute)
+app.use("/api/product",productRoute)
 
 app.use(errorMiddleware)

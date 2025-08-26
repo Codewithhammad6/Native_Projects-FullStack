@@ -1,20 +1,24 @@
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native'
 import React, { useState } from 'react'
 import useCartStore from '../../store/useCartStore.ts'
+import { useNavigation } from "@react-navigation/native";
 const ProductItem = ({item}) => {
   const {addToCart}=useCartStore()
     const [addedToCart,setAddedToCart]=useState()
+    const navigation = useNavigation();
   
     const handler=(item)=>{
 addToCart(item)
 setAddedToCart(true)
 setTimeout(() => {
   setAddedToCart(false)
-}, 60000);
+}, 80000);
 }
 
   return (
-    <Pressable style={{marginHorizontal:20,marginVertical:25}}>
+    <Pressable 
+    onPress={() => navigation.navigate('Info', { item })}
+    style={{marginHorizontal:20,marginVertical:25}}>
       <Image
       style={{height:150,width:150, resizeMode:'contain'}}
       source={{uri:item.image}}
@@ -29,11 +33,27 @@ setTimeout(() => {
         }}
       >
         <Text style={{ fontSize: 15, fontWeight: "bold" }}>Rs.{item?.price}</Text>
-        <Text style={{ color: "#FFC72C", fontWeight: "bold" }}>
-          {item?.rating?.rate} ratings
+        <Text style={{ color: "green", fontWeight: "bold" }}>
+         In stock
         </Text>
       </View>
-      <Pressable
+         {addedToCart ? (
+              <Pressable
+        style={{
+          backgroundColor: "#f1b205ff",
+          padding: 10,
+          borderRadius: 20,
+          justifyContent: "center",
+          alignItems: "center",
+          marginHorizontal: 10,
+          marginTop: 10,
+        }}
+      >
+                  <Text>Added to Cart</Text>
+      </Pressable>
+
+                ):(
+                   <Pressable
       onPress={()=>handler(item)}
         style={{
           backgroundColor: "#FFC72C",
@@ -45,12 +65,10 @@ setTimeout(() => {
           marginTop: 10,
         }}
       >
-         {addedToCart ? (
-                  <Text>Added to Cart</Text>
-                ):(
                 <Text>Add to Cart</Text>
-                )}
       </Pressable>
+
+                )}
       
     </Pressable>
   )

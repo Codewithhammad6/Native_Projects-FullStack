@@ -1,8 +1,9 @@
-import { View, Text, ScrollView, Pressable, Alert } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import { View, Text, ScrollView, Pressable, Alert, TouchableOpacity } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
 import userStore from '../store/userStore.ts';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import useCartStore from '../store/useCartStore.ts';
+import { useFocusEffect } from '@react-navigation/native';
 
 const ConfirmationScreen = ({navigation}) => {
   const steps = [
@@ -13,7 +14,7 @@ const ConfirmationScreen = ({navigation}) => {
   ];
   const [currentStep, setCurrentStep] = useState(0);
   const [addresses, setAddresses] = useState([]);
-  const { getAddresses,addOrders } = userStore();
+  const { getAddresses,addOrders,delAddress } = userStore();
   const [selectedAddress, setSelectedAddress] = useState();
   const [option, setOption] = useState();
   const [selectedOption, setSelectedOption] = useState('');
@@ -29,6 +30,12 @@ const ConfirmationScreen = ({navigation}) => {
   useEffect(() => {
     fetchAddresses();
   }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchAddresses();
+    }, [])
+  );
 
 const {cart,cleanCart} = useCartStore()
 
@@ -51,6 +58,10 @@ addOrders(orderData)
 navigation.navigate("Order")
 cleanCart()
 }
+
+
+
+
 
 const pay =async()=>{
 try {
@@ -191,20 +202,10 @@ Alert.alert("On Process use Cash on Delivery")
                       marginTop: 10,
                     }}
                   >
-                    <Pressable
-                      style={{
-                        backgroundColor: '#f5f5f5ff',
-                        paddingHorizontal: 10,
-                        paddingVertical: 6,
-                        borderRadius: 5,
-                        borderWidth: 0.5,
-                        borderColor: '#D0D0D0',
-                      }}
-                    >
-                      <Text>Edit</Text>
-                    </Pressable>
+                  
 
-                    <Pressable
+                    <TouchableOpacity
+                    onPress={()=>delAddress(item._id)}
                       style={{
                         backgroundColor: '#F5F5F5',
                         paddingHorizontal: 10,
@@ -215,7 +216,7 @@ Alert.alert("On Process use Cash on Delivery")
                       }}
                     >
                       <Text>Remove</Text>
-                    </Pressable>
+                    </TouchableOpacity>
                   </View>
 
                   <View>
@@ -241,6 +242,33 @@ Alert.alert("On Process use Cash on Delivery")
                 </View>
               </Pressable>
             ))}
+            <View>
+               <Pressable
+                            onPress={() => {
+                              navigation.navigate('Add');
+                              
+                            }}
+                            style={{
+                              borderColor: '#D0D0D0',
+                              borderWidth: 1,
+                              marginTop: 10,
+                              padding: 10,
+                              justifyContent: 'center',
+                              alignItems: 'center',
+                              marginHorizontal:10
+                            }}
+                          >
+                            <Text
+                              style={{
+                                textAlign: 'center',
+                                fontWeight: 'bold',
+                                color: '#0066b2',
+                              }}
+                            >
+                              Add an Address or pick-up point
+                            </Text>
+                          </Pressable>
+              </View>
           </Pressable>
         </>
       )}

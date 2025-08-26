@@ -14,19 +14,26 @@ import {
 import React, { useState } from 'react';
 import userStore from '../store/userStore.ts';
 
-const Login = ({ navigation }) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+const NewPasswordScreen = ({route ,navigation }) => {
+    const {code} = route.params
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
-  const { loading, login } = userStore();
+  const { loading, newPassword} = userStore();
 
-  const handleLogin = () => {
-    if (!email || !password) {
-      Alert.alert('Error', 'Please enter both email and password');
+
+  const handleSend = () => {
+    if (!password || !confirmPassword) {
+      Alert.alert('Error', 'Please enter password');
       return;
     }
+    if (password !== confirmPassword) {
+      Alert.alert('Error', 'ConfirmPassword not match');
+      return;
+    }
+   
 
-    login({ email, password });
+    newPassword(password,code,navigation);
   };
 
   if (loading) {
@@ -67,77 +74,65 @@ const Login = ({ navigation }) => {
               source={require('../assets/logo.png')}
               resizeMode="contain"
             />
-            <Text style={styles.title}>Welcome Back</Text>
-            <Text style={styles.subtitle}>Login to your account</Text>
+            <Text style={styles.title}>New Password</Text>
+            <Text style={styles.subtitle}>Enter new password</Text>
           </View>
 
           <View style={styles.formContainer}>
-            <View style={styles.inputContainer}>
-              <Text style={styles.label}>Email</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Enter your email"
-                placeholderTextColor="#999"
-                value={email}
-                onChangeText={setEmail}
-                keyboardType="email-address"
-                autoCapitalize="none"
-                autoCorrect={false}
-              />
-            </View>
+           <View style={styles.inputContainer}>
+                        <Text style={styles.label}>Password</Text>
+                        <TextInput
+                          style={styles.input}
+                          placeholder="Enter your password"
+                          placeholderTextColor="#999"
+                          value={password}
+                          onChangeText={setPassword}
+                          secureTextEntry
+                          autoCapitalize="none"
+                        />
+                      </View>
+          
+                      <View style={styles.inputContainer}>
+                        <Text style={styles.label}>Confirm Password</Text>
+                        <TextInput
+                          style={styles.input}
+                          placeholder="Confirm your password"
+                          placeholderTextColor="#999"
+                          value={confirmPassword}
+                          onChangeText={setConfirmPassword}
+                          secureTextEntry
+                          autoCapitalize="none"
+                        />
+                      </View>
 
-            <View style={styles.inputContainer}>
-              <Text style={styles.label}>Password</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Enter your password"
-                placeholderTextColor="#999"
-                value={password}
-                onChangeText={setPassword}
-                secureTextEntry
-                autoCapitalize="none"
-              />
-            </View>
 
             <TouchableOpacity
               style={styles.loginButton}
-              onPress={handleLogin}
+              onPress={handleSend}
               disabled={loading}
             >
               <Text style={styles.buttonText}>
-                {loading ? 'Logging in...' : 'Login'}
+                {loading ? 'Sending...' : 'Send'}
               </Text>
             </TouchableOpacity>
 
-            <TouchableOpacity
-            onPress={()=>navigation.navigate('Forgot')}
-            style={styles.forgotPasswordButton}>
-              <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
-            </TouchableOpacity>
+      
           </View>
 
-          <View style={styles.footer}>
-            <Text style={styles.footerText}>Don't have an account? </Text>
-            <TouchableOpacity
-              onPress={() => {
-                navigation.navigate('Register');
-              }}
-            >
-              <Text style={styles.signUpText}>Sign Up</Text>
-            </TouchableOpacity>
-          </View>
+         
         </KeyboardAvoidingView>
       </ScrollView>
     </SafeAreaView>
   );
 };
 
-export default Login;
+export default NewPasswordScreen;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f5f5f5',
+    marginTop:40
   },
   scrollContainer: {
     flexGrow: 1,
@@ -199,14 +194,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
-  forgotPasswordButton: {
-    alignSelf: 'center',
-    marginTop: 20,
-  },
-  forgotPasswordText: {
-    color: '#041E42',
-    fontSize: 14,
-  },
+  
   footer: {
     flexDirection: 'row',
     justifyContent: 'center',
@@ -216,9 +204,5 @@ const styles = StyleSheet.create({
     color: '#666',
     fontSize: 14,
   },
-  signUpText: {
-    color: '#041E42',
-    fontSize: 14,
-    fontWeight: 'bold',
-  },
+
 });

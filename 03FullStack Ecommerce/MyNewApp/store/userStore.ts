@@ -72,6 +72,92 @@ const userStore = create((set) => ({
     }
   },
 
+
+
+//forgot password
+forgot: async (email,navigation) => {
+    try {
+      set({ loading: true });
+      const { data } = await axiosInstance.post("/user/forgot", email);
+   Alert.alert(
+      "Success",
+      "Please verify your email",
+      [
+        {
+          text: "OK",
+          onPress: () => navigation.replace("Reset"),
+        },
+      ]
+    );
+      return data;
+    } catch (error) {
+      Alert.alert(error?.response?.data?.message || "Forgot failed");
+      set({ isAuth: false });
+      throw error;
+    } finally {
+      set({ loading: false });
+    }
+  },
+
+//reset key
+reset: async (code,navigation) => {
+    try {
+      set({ loading: true });
+      const { data } = await axiosInstance.post("/user/verify", code);
+Alert.alert(
+      "Success",
+      "verified successfully",
+      [
+        {
+          text: "OK",
+          onPress: () => navigation.replace("NewPassword",code),
+        },
+      ]
+    );
+      return data;
+    } catch (error) {
+      Alert.alert(error?.response?.data?.message || "Reset failed");
+      set({ isAuth: false });
+      throw error;
+    } finally {
+      set({ loading: false });
+    }
+  },
+
+//sendNew password
+newPassword: async (password,code,navigation) => {
+    try {
+      set({ loading: true });
+      const { data } = await axiosInstance.post("/user/newpassword", {password,code});
+Alert.alert(
+      "Success",
+      "Change successfully",
+      [
+        {
+          text: "OK",
+          onPress: () => navigation.replace("Login"),
+        },
+      ]
+    );
+      return data;
+    } catch (error) {
+      Alert.alert(error?.response?.data?.message || "NewPassword failed");
+      set({ isAuth: false });
+      throw error;
+    } finally {
+      set({ loading: false });
+    }
+  },
+
+
+
+
+
+
+
+
+
+
   //  Logout user
   logout: async () => {
     try {
@@ -124,6 +210,20 @@ getAddresses: async () => {
   }
 },
 
+delAddress: async (Id) => {
+  try {
+    set({ loading: true });
+    const { data } = await axiosInstance.delete(`/user/address/${Id}`);
+     Alert.alert("Success", "Address deleted successfully")
+    return data;
+  } catch (error) {
+    Alert.alert("Error", error?.response?.data?.message || "Failed to delete address")
+    throw error;
+  } finally {
+    set({ loading: false });
+  }
+},
+
 
 
 
@@ -159,22 +259,90 @@ getOrders: async () => {
 },
 
 
+getUsers: async () => {
+  try {
+    set({ loading: true });
+    const { data } = await axiosInstance.get("/user/getUsers");
+    return data.users;
+  } catch (error) {
+    Alert.alert(error?.response?.data?.message || "Users get failed");
+    throw error;
+  } finally {
+    set({ loading: false });
+  }
+},
+
+
+
+deleteOrder: async (orderId) => {
+  try {
+    set({ loading: true });
+    const { data } = await axiosInstance.delete(`/order/order/${orderId}`);
+     Alert.alert("Success", "Order deleted successfully")
+    return data;
+  } catch (error) {
+    Alert.alert("Error", error?.response?.data?.message || "Failed to delete order")
+    throw error;
+  } finally {
+    set({ loading: false });
+  }
+},
+
+
+
+//  Change Status via Dropdown
+updateStatus : async (orderId,newStatus) => {
+  try {
+    set({ loading: true });
+    const {data} = await axiosInstance.put(`/order/order/${orderId}`, { status: newStatus });
+      Alert.alert("Success", `Status updated to ${newStatus}`);
+    return data;
+  } catch (error) {
+     Alert.alert("Error", error?.response?.data?.message || "Failed to update status");
+   throw error;
+  } finally {
+    set({ loading: false });
+  }
+},
+
+
+getAllOrders: async () => {
+   try {
+    set({ loading: true });
+    const { data } = await axiosInstance.get("/order/AllOrders");
+    return data.orders;
+  } catch (error) {
+    Alert.alert(error?.response?.data?.message || "Users get failed");
+    throw error;
+  } finally {
+    set({ loading: false });
+  }
+},
+
+
+
+
+
+deleteUser: async (userId) => {
+  try {
+    set({ loading: true });
+    const { data } = await axiosInstance.delete(`/user/users/${userId}`);
+     Alert.alert("Success", "User deleted successfully")
+    return data;
+  } catch (error) {
+    Alert.alert("Error", error?.response?.data?.message || "Failed to delete user")
+    throw error;
+  } finally {
+    set({ loading: false });
+  }
+},
+
+
+
 
 
 
 }));
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

@@ -20,6 +20,23 @@ import ConfirmationScreen from './screens/ConfirmationScreen.tsx';
 import OrderScreen from './screens/OrderScreen.tsx';
 import ShowOrderScreen from './screens/ShowOrderScreen.tsx';
 import { Text } from 'react-native';
+import AdminScreen from './adminScreens/AdminScreen.tsx';
+import UsersScreen from './adminScreens/UsersScreen.tsx';
+import UserOrderScreen from './adminScreens/UserOrderScreen.tsx';
+import { ADMIN } from '@env';
+import ManageOrderScreen from './adminScreens/ManageOrderScreen.tsx';
+import PendingOrdersScreen from './adminScreens/PendingOrdersScreen.tsx';
+import ShippedOrdersScreen from './adminScreens/ShippedOrdersScreen.tsx';
+import DeliveredOrdersScreen from './adminScreens/DeliveredOrdersScreen.tsx';
+import ManageProducts from './adminScreens/productScreens/ManageProducts.tsx';
+import AllProducts from './adminScreens/productScreens/AllProducts.tsx';
+import AddProduct from './adminScreens/productScreens/AddProduct.tsx';
+import EditProduct from './adminScreens/productScreens/EditProduct.tsx';
+import SearchBaseProduct from './adminScreens/productScreens/SearchBaseProduct.tsx';
+import ForgetPasswordScreen from './screens/ForgetPasswordScreen.tsx';
+import ResetKeyScreen from './screens/ResetKeyScreen.tsx';
+import NewPasswordScreen from './screens/NewPasswordScreen.tsx';
+
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
@@ -75,7 +92,7 @@ function MyTabs() {
 }
 
 const App = () => {
-  const { isAuth, getUser } = userStore();
+  const { isAuth, getUser,user } = userStore();
 
   useEffect(() => {
     getUser();
@@ -98,12 +115,31 @@ const App = () => {
             <Stack.Screen name="Confirm" component={ConfirmationScreen} />
             <Stack.Screen name="Order" component={OrderScreen} />
             <Stack.Screen name="ShowOrder" component={ShowOrderScreen} />
+            {user?.email === ADMIN && (
+              <>
+            <Stack.Screen name="Admin" component={AdminScreen} />
+            <Stack.Screen name="Users" component={UsersScreen} />
+            <Stack.Screen name="UserOrders" component={UserOrderScreen} />
+            <Stack.Screen name="ManageOrders" component={ManageOrderScreen} />
+            <Stack.Screen name="PendingOrders" component={PendingOrdersScreen} />
+            <Stack.Screen name="ShippedOrders" component={ShippedOrdersScreen} />
+            <Stack.Screen name="DeliveredOrders" component={DeliveredOrdersScreen} />
+              </>
+            )}
+            <Stack.Screen name="ManageProducts" component={ManageProducts} />
+            <Stack.Screen name="AllProduct" component={AllProducts} />
+            <Stack.Screen name="AddProduct" component={AddProduct} />
+            <Stack.Screen name="EditProduct" component={EditProduct} />
+            <Stack.Screen name="SearchProduct" component={SearchBaseProduct} />
 
           </>
         ) : (
           <>
             <Stack.Screen name="Login" component={Login} />
             <Stack.Screen name="Register" component={Register} />
+            <Stack.Screen name="Forgot" component={ForgetPasswordScreen} />
+            <Stack.Screen name="Reset" component={ResetKeyScreen} />
+            <Stack.Screen name="NewPassword" component={NewPasswordScreen} />
           </>
         )}
       </Stack.Navigator>

@@ -7,16 +7,23 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-email: {
-  type: String,
-  required: true,
-  unique: true,
-},
-
+ email: {
+    type: String,
+    required: [true, 'Email is required'],
+    unique: true,
+    validate: {
+      validator: function(email) {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+      },
+      message: 'Please provide a valid email address'
+    }
+  },
   password: {
     type: String,
-    required: true,
-    select: false,   //important for security
+    required: [true, 'Password is required'],
+    select: false,
+    minlength: [6, 'Password must be at least 6 characters'],
+    maxlength: [32, 'Password cannot exceed 32 characters']
   },
   verified: {
     type: Boolean,
@@ -60,6 +67,13 @@ userSchema.methods.comparePassword = async function (enteredPassword) {
 };
 
 
+
+//  Generate a 5-digit verification code
+userSchema.methods.generateCode = function () {
+  const code = Math.floor(10000 + Math.random() * 90000).toString();
+  this.verificationToken = code;
+  return code;
+};
 
 
 

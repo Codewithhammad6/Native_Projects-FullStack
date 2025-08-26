@@ -14,19 +14,23 @@ import {
 import React, { useState } from 'react';
 import userStore from '../store/userStore.ts';
 
-const Login = ({ navigation }) => {
+const ForgetPasswordScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const { loading, forgot} = userStore();
 
-  const { loading, login } = userStore();
 
   const handleLogin = () => {
-    if (!email || !password) {
-      Alert.alert('Error', 'Please enter both email and password');
+    if (!email) {
+      Alert.alert('Error', 'Please enter email');
       return;
     }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    Alert.alert('Error', 'Please enter a valid email address');
+    return;
+  }
 
-    login({ email, password });
+    forgot({email},navigation);
   };
 
   if (loading) {
@@ -67,8 +71,8 @@ const Login = ({ navigation }) => {
               source={require('../assets/logo.png')}
               resizeMode="contain"
             />
-            <Text style={styles.title}>Welcome Back</Text>
-            <Text style={styles.subtitle}>Login to your account</Text>
+            <Text style={styles.title}>Forgot Password</Text>
+            <Text style={styles.subtitle}>Send code to email</Text>
           </View>
 
           <View style={styles.formContainer}>
@@ -86,18 +90,6 @@ const Login = ({ navigation }) => {
               />
             </View>
 
-            <View style={styles.inputContainer}>
-              <Text style={styles.label}>Password</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Enter your password"
-                placeholderTextColor="#999"
-                value={password}
-                onChangeText={setPassword}
-                secureTextEntry
-                autoCapitalize="none"
-              />
-            </View>
 
             <TouchableOpacity
               style={styles.loginButton}
@@ -105,39 +97,27 @@ const Login = ({ navigation }) => {
               disabled={loading}
             >
               <Text style={styles.buttonText}>
-                {loading ? 'Logging in...' : 'Login'}
+                {loading ? 'Sending...' : 'Send'}
               </Text>
             </TouchableOpacity>
 
-            <TouchableOpacity
-            onPress={()=>navigation.navigate('Forgot')}
-            style={styles.forgotPasswordButton}>
-              <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
-            </TouchableOpacity>
+         
           </View>
 
-          <View style={styles.footer}>
-            <Text style={styles.footerText}>Don't have an account? </Text>
-            <TouchableOpacity
-              onPress={() => {
-                navigation.navigate('Register');
-              }}
-            >
-              <Text style={styles.signUpText}>Sign Up</Text>
-            </TouchableOpacity>
-          </View>
+         
         </KeyboardAvoidingView>
       </ScrollView>
     </SafeAreaView>
   );
 };
 
-export default Login;
+export default ForgetPasswordScreen;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f5f5f5',
+    marginTop:40
   },
   scrollContainer: {
     flexGrow: 1,
@@ -199,14 +179,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
-  forgotPasswordButton: {
-    alignSelf: 'center',
-    marginTop: 20,
-  },
-  forgotPasswordText: {
-    color: '#041E42',
-    fontSize: 14,
-  },
+  
   footer: {
     flexDirection: 'row',
     justifyContent: 'center',
@@ -216,9 +189,5 @@ const styles = StyleSheet.create({
     color: '#666',
     fontSize: 14,
   },
-  signUpText: {
-    color: '#041E42',
-    fontSize: 14,
-    fontWeight: 'bold',
-  },
+
 });

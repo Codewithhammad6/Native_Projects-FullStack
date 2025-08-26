@@ -12,7 +12,7 @@ import React, { useEffect, useState } from "react";
 import userStore from "../store/userStore.ts";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Ionicons from "react-native-vector-icons/Ionicons";
-
+import { ADMIN } from '@env';
 const Profile = ({ navigation }) => {
   const { logout, getOrders, user } = userStore();
 
@@ -43,6 +43,16 @@ const Profile = ({ navigation }) => {
 
         
           <View style={styles.actions}>
+{user.email === ADMIN && (
+<TouchableOpacity
+              style={styles.actionBtn}
+              onPress={() => navigation.navigate("Admin")}
+            >
+              <Ionicons name="receipt-outline" size={22} color="#fff" />
+              <Text style={styles.actionText}>Admin Panel</Text>
+            </TouchableOpacity>
+)}
+            
 
             <TouchableOpacity
               style={styles.actionBtn}

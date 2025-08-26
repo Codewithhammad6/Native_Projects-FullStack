@@ -14,19 +14,18 @@ import {
 import React, { useState } from 'react';
 import userStore from '../store/userStore.ts';
 
-const Login = ({ navigation }) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+const ResetKeyScreen = ({ navigation }) => {
+  const [code, setCode] = useState('');
+  const { loading, reset} = userStore();
 
-  const { loading, login } = userStore();
 
   const handleLogin = () => {
-    if (!email || !password) {
-      Alert.alert('Error', 'Please enter both email and password');
+    if (!code) {
+      Alert.alert('Error', 'Please enter code');
       return;
     }
 
-    login({ email, password });
+    reset({code},navigation);
   };
 
   if (loading) {
@@ -67,37 +66,23 @@ const Login = ({ navigation }) => {
               source={require('../assets/logo.png')}
               resizeMode="contain"
             />
-            <Text style={styles.title}>Welcome Back</Text>
-            <Text style={styles.subtitle}>Login to your account</Text>
+            <Text style={styles.title}>Enter PinCode</Text>
           </View>
 
           <View style={styles.formContainer}>
             <View style={styles.inputContainer}>
-              <Text style={styles.label}>Email</Text>
+              <Text style={styles.label}>Code</Text>
               <TextInput
                 style={styles.input}
-                placeholder="Enter your email"
+                placeholder="Enter your code"
                 placeholderTextColor="#999"
-                value={email}
-                onChangeText={setEmail}
-                keyboardType="email-address"
+                value={code}
+                onChangeText={setCode}
                 autoCapitalize="none"
                 autoCorrect={false}
               />
             </View>
 
-            <View style={styles.inputContainer}>
-              <Text style={styles.label}>Password</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Enter your password"
-                placeholderTextColor="#999"
-                value={password}
-                onChangeText={setPassword}
-                secureTextEntry
-                autoCapitalize="none"
-              />
-            </View>
 
             <TouchableOpacity
               style={styles.loginButton}
@@ -105,39 +90,27 @@ const Login = ({ navigation }) => {
               disabled={loading}
             >
               <Text style={styles.buttonText}>
-                {loading ? 'Logging in...' : 'Login'}
+                {loading ? 'Verifying...' : 'Verify'}
               </Text>
             </TouchableOpacity>
 
-            <TouchableOpacity
-            onPress={()=>navigation.navigate('Forgot')}
-            style={styles.forgotPasswordButton}>
-              <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
-            </TouchableOpacity>
+         
           </View>
 
-          <View style={styles.footer}>
-            <Text style={styles.footerText}>Don't have an account? </Text>
-            <TouchableOpacity
-              onPress={() => {
-                navigation.navigate('Register');
-              }}
-            >
-              <Text style={styles.signUpText}>Sign Up</Text>
-            </TouchableOpacity>
-          </View>
+         
         </KeyboardAvoidingView>
       </ScrollView>
     </SafeAreaView>
   );
 };
 
-export default Login;
+export default ResetKeyScreen;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f5f5f5',
+    marginTop:40
   },
   scrollContainer: {
     flexGrow: 1,
@@ -199,14 +172,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
-  forgotPasswordButton: {
-    alignSelf: 'center',
-    marginTop: 20,
-  },
-  forgotPasswordText: {
-    color: '#041E42',
-    fontSize: 14,
-  },
+  
   footer: {
     flexDirection: 'row',
     justifyContent: 'center',
@@ -216,9 +182,5 @@ const styles = StyleSheet.create({
     color: '#666',
     fontSize: 14,
   },
-  signUpText: {
-    color: '#041E42',
-    fontSize: 14,
-    fontWeight: 'bold',
-  },
+
 });
