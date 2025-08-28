@@ -284,7 +284,7 @@ console.log(products)
 
   return (
     <>
-    <View style={{marginTop:25,backgroundColor:'#d0d0d0d3',flex:1}}>
+    <View style={{marginTop:0,backgroundColor:'#d0d0d0d3',flex:1}}>
 
      <View
           style={{

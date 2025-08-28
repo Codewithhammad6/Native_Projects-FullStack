@@ -9,7 +9,7 @@ import {
 } from 'react-native'
 import React, { useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { Picker } from '@react-native-picker/picker'   // ✅ dropdown
+import { Picker } from '@react-native-picker/picker'   //  dropdown
 import userStore from '../store/userStore.ts'
 
 const DeliveredOrdersScreen = ({ route }) => {

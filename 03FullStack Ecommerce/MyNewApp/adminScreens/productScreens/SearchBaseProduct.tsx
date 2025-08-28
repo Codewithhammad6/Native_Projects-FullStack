@@ -81,7 +81,6 @@ const SearchBaseProduct = ({ route, navigation }) => {
             style={styles.searchInput}
             value={searchQuery}
             onChangeText={(text) => setSearchQuery(text)}
-            autoFocus={true}
           />
           {searchQuery.length > 0 && (
             <Pressable onPress={() => setSearchQuery('')}>
@@ -92,7 +91,6 @@ const SearchBaseProduct = ({ route, navigation }) => {
       </View>
 
       <View style={styles.resultsInfo}>
-        <Text style={{fontWeight:'600',fontSize:16}}>Search Result</Text>
         <Text style={styles.resultsText}>
           {filteredProducts.length} product{filteredProducts.length !== 1 ? 's' : ''} found
           {searchQuery ? ` for "${searchQuery}"` : ''} in {item}
@@ -128,7 +126,6 @@ const SearchBaseProduct = ({ route, navigation }) => {
 
 const styles = StyleSheet.create({
   container: {
-    marginTop:25,
     flex: 1,
     backgroundColor: '#fff',
   },
@@ -150,6 +147,7 @@ const styles = StyleSheet.create({
     flex: 1,
     marginLeft: 6,
     color: '#000',
+    paddingBottom:7
   },
   resultsInfo: {
     padding: 15,

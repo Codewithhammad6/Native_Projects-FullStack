@@ -9,6 +9,7 @@ import {
   Dimensions,
   FlatList,
   TouchableOpacity,
+  StatusBar,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
@@ -68,6 +69,7 @@ const Home = ({ navigation }) => {
   useEffect(() => {
     fetchAddresses();
     fetchProducts()
+
   }, []);
 
   useFocusEffect(
@@ -78,6 +80,7 @@ const Home = ({ navigation }) => {
       setIsSearching(false)
     }, [])
   );
+
 
   const list = [
     {
@@ -115,6 +118,7 @@ const Home = ({ navigation }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const images = [
+    'https://cdn.metro-online.com/-/media/Project/MCW/PK_Metro/2020-to-2021/Product-World-2021/12-appliances.jpg?rev=44e671fb84bb4009a40522a023624dcb&w=975&webp=1&hash=10D1A06D97CB1F734340538B3DF0AAD2',
     'https://img.lazcdn.com/us/domino/cfd35d4d-c66f-4f8a-8577-40f233b36dc1_PK-1976-688.jpg_2200x2200q80.jpg_.webp',
     'https://img.lazcdn.com/us/domino/35577a99-4600-40e4-b391-93f2c92e1a9a_PK-1976-688.jpg_2200x2200q80.jpg_.webp',
     'https://img.lazcdn.com/us/domino/cec1828b-baf9-44be-a516-f6daa1b6f22f_PK-1976-688.jpg_2200x2200q80.jpg_.webp',
@@ -155,9 +159,9 @@ const Home = ({ navigation }) => {
 
   return (
     <>
-      <SafeAreaView
+        <SafeAreaView
         style={{
-          paddingTop: Platform.OS === 'android' ? 5 : 0,
+          paddingTop: Platform.OS === 'android' ? 0 : 0,
           flex: 1,
           backgroundColor: 'white',
         }}
@@ -187,7 +191,7 @@ const Home = ({ navigation }) => {
               <TextInput
                 placeholder="Search by name"
                 placeholderTextColor="#A9A9A9"
-                style={{ fontSize: 16, flex: 1, marginLeft: 6, color: '#000' }}
+                style={{ fontSize: 16, flex: 1, marginLeft: 6,paddingBottom:7, color: '#000' }}
                 value={searchQuery}
                 onChangeText={handleSearchChange}
               />
@@ -282,17 +286,19 @@ const Home = ({ navigation }) => {
                 }}
               >
                 <Ionicons name="location-outline" size={26} color="black" />
-                <Pressable>
+                <TouchableOpacity
+                onPress={() => setModalVisible(!modalVisible)}
+                >
                   {selectedAddress ? (
-                      <Text style={{ fontSize: 14, fontWeight: '500' }}>
+                      <Text style={{ fontSize: 13, fontWeight: '500' }}>
                     {selectedAddress?.name} - {selectedAddress?.street}
                   </Text>
                   ) :(
-                   <Text style={{ fontSize: 14, fontWeight: '500' }}>
+                    <Text style={{ fontSize: 14, fontWeight: '500' }}>
                     choose your address
                   </Text>
                   )}
-                </Pressable>
+                </TouchableOpacity>
                 <Ionicons name="chevron-down-outline" size={22} color="black" />
               </Pressable>
 
@@ -343,7 +349,7 @@ const Home = ({ navigation }) => {
                     key={index}
                     style={{
                       width: screenWidth,
-                      alignItems: 'center',
+                      // alignItems: 'center',
                       justifyContent: 'center',
                     }}
                   >

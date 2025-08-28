@@ -10,6 +10,8 @@ import {
   Platform,
   ScrollView,
   Alert,
+  TouchableWithoutFeedback,
+  Keyboard,
 } from 'react-native';
 import React, { useState } from 'react';
 import userStore from '../store/userStore.ts';
@@ -50,16 +52,22 @@ const Login = ({ navigation }) => {
       </View>
     );
   }
+    const dismissKeyboard = () => {
+      Keyboard.dismiss();
+    };
 
   return (
+     <TouchableWithoutFeedback onPress={dismissKeyboard}>
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
       <ScrollView
+      showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContainer}
         keyboardShouldPersistTaps="handled"
       >
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
           style={styles.keyboardAvoidingView}
+          keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
         >
           <View style={styles.header}>
             <Image
@@ -83,6 +91,7 @@ const Login = ({ navigation }) => {
                 keyboardType="email-address"
                 autoCapitalize="none"
                 autoCorrect={false}
+                returnKeyType="next"
               />
             </View>
 
@@ -96,6 +105,8 @@ const Login = ({ navigation }) => {
                 onChangeText={setPassword}
                 secureTextEntry
                 autoCapitalize="none"
+returnKeyType="done"
+
               />
             </View>
 
@@ -129,6 +140,7 @@ const Login = ({ navigation }) => {
         </KeyboardAvoidingView>
       </ScrollView>
     </SafeAreaView>
+    </TouchableWithoutFeedback>
   );
 };
 
@@ -142,6 +154,8 @@ const styles = StyleSheet.create({
   scrollContainer: {
     flexGrow: 1,
     justifyContent: 'center',
+paddingBottom: 50
+
   },
   keyboardAvoidingView: {
     flex: 1,

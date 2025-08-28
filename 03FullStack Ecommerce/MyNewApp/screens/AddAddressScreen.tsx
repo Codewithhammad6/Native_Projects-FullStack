@@ -46,7 +46,7 @@ setAddresses((prev) => prev.filter((addr) => addr._id !== id));
   }
 
   return (
-    <ScrollView showsVerticalScrollIndicator={false} style={{ marginTop: 30 }}>
+    <ScrollView showsVerticalScrollIndicator={false} style={{ marginTop: 0}}>
      <View
           style={{
             backgroundColor: '#4199c7ff',

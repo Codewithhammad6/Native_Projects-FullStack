@@ -165,8 +165,8 @@ function EditProduct({ route, navigation }) {
 
       <Text style={styles.sectionHeader}>Product Category</Text>
            <View>
-             <Text style={{fontWeight:500}}>Popular categories :</Text>
-             <Text style={{marginBottom:4}}>Men , Jewelery , Ladies , Home , Deals , Electronics , Mobiles , Fashion</Text>
+             <Text style={{fontWeight:500,fontSize:13}}>Popular categories :</Text>
+             <Text style={{marginBottom:4,fontSize:11}}>Men , Jewelery , Ladies , Home , Deals , Electronics , Mobiles , Fashion</Text>
            </View>
       <TextInput
         style={styles.input}
@@ -174,7 +174,7 @@ function EditProduct({ route, navigation }) {
         onChangeText={(t) => handleChange("category", t)}
         placeholder="Category"
         placeholderTextColor={"gray"}
-
+ 
       />
       <Text style={styles.sectionHeader}>Color</Text>
       <TextInput
@@ -329,10 +329,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     flex: 1,
     padding: 10,
-    marginTop:25
+    marginTop:15
   },
   sectionHeader: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: "bold",
     marginTop: 20,
     marginBottom: 10,
@@ -349,7 +349,7 @@ const styles = StyleSheet.create({
     borderColor: "#ccc",
     padding: 12,
     borderRadius: 8,
-    fontSize: 16,
+    fontSize: 14,
   },
   toggleContainer: {
     flexDirection: "row",

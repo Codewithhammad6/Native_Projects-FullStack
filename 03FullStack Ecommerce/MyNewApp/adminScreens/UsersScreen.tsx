@@ -33,7 +33,6 @@ const UsersScreen = ({navigation}) => {
   );
 
 
-console.log(users)
 
 
 const handleDeleteUser = async (userId) => {
@@ -98,7 +97,6 @@ const handleDeleteUser = async (userId) => {
     marginTop: 10,
     backgroundColor: '#4794bdff',
     alignItems: 'center',
-    marginHorizontal: 60,
     borderRadius: 20,
     paddingVertical: 8,
     paddingHorizontal:70
@@ -153,7 +151,7 @@ const handleDeleteUser = async (userId) => {
         <TextInput
           placeholder="Search by name"
           placeholderTextColor="#A9A9A9"
-          style={{ fontSize: 16, flex: 1, marginLeft: 6, color: '#000' }}
+          style={{ fontSize: 16, flex: 1, marginLeft: 6,paddingBottom:7, color: '#000' }}
           value={searchQuery}
           onChangeText={(text) => setSearchQuery(text)}
         />
@@ -171,7 +169,7 @@ const handleDeleteUser = async (userId) => {
   return (
     <SafeAreaView
       style={{
-        paddingTop: Platform.OS === 'android' ? 5 : 0,
+        paddingTop: Platform.OS === 'android' ? 0 : 0,
         flex: 1,
         backgroundColor: '#beb5b584',
       }}

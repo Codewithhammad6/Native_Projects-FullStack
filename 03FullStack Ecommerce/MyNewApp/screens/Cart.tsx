@@ -14,7 +14,7 @@ const Cart = ({navigation}) => {
     const [searchQuery, setSearchQuery] = useState('')
   const { cart, incementQuantity, decrementQuantity, removeFromCart } =
     useCartStore();
-  console.log(cart);
+
 
   // filter cart item by searchQuery (case-insensitive)
   const filteredProducts = cart.filter((product) =>
@@ -29,7 +29,10 @@ const Cart = ({navigation}) => {
 
   console.log(total);
   return (
-    <ScrollView style={{ marginTop: 30, flex: 1, backgroundColor: 'white' }}>
+    <ScrollView 
+    style={{ marginTop: 0,
+     flex: 1,
+      backgroundColor: 'white' }}>
       <View
                 style={{
                   backgroundColor: '#4199c7ff',

@@ -66,17 +66,7 @@ cleanCart()
 const pay =async()=>{
 try {
 
-
-Alert.alert("On Process use Cash on Delivery")
-
-//   const orderData ={
-// cartItems:cart,
-// totalPrice:total,
-// shippingAddress:selectedAddress,
-// paymentMethod:"card"
-// }
-// addOrders(orderData)
-// navigation.navigate("Order")
+navigation.navigate('Payment',{cart,total,selectedAddress})
 // cleanCart()
 } catch (error) {
   console.log("error",error)
@@ -84,7 +74,7 @@ Alert.alert("On Process use Cash on Delivery")
 }
 
   return (
-    <ScrollView style={{ marginTop: 25 }}>
+    <ScrollView style={{ marginTop: 0 }}>
       <View style={{ flex: 1, paddingHorizontal: 20, paddingTop: 30 }}>
         <View
           style={{
@@ -397,7 +387,7 @@ Alert.alert("On Process use Cash on Delivery")
                 color="gray"
               />
             )}
-            <Text style={{ flex: 1, textDecorationLine: 'line-through'}}>Jazz Cash / Credit or debit card</Text>
+            <Text style={{ flex: 1}}>Jazz Cash / Credit or debit card</Text>
           </View>
           {selectedOption && selectedOption === 'cash' && (
             <Pressable

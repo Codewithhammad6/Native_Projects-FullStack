@@ -36,19 +36,22 @@ import SearchBaseProduct from './adminScreens/productScreens/SearchBaseProduct.t
 import ForgetPasswordScreen from './screens/ForgetPasswordScreen.tsx';
 import ResetKeyScreen from './screens/ResetKeyScreen.tsx';
 import NewPasswordScreen from './screens/NewPasswordScreen.tsx';
+import PaymentScreen from './screens/PaymentScreen.tsx';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
 function MyTabs() {
   return (
-    <Tab.Navigator screenOptions={{ headerShown: false }}>
+    <Tab.Navigator
+    
+    screenOptions={{ headerShown: false ,tabBarHideOnKeyboard: true }}>
       <Tab.Screen
         name="Home"
         component={Home}
         options={{
           tabBarLabel: 'Home',
-          tabBarLabelStyle: { color: '#008E97',marginTop:5 },
+          tabBarLabelStyle: { color: '#008E97'},
 
           tabBarIcon: ({ focused }) =>
   <Ionicons
@@ -64,7 +67,7 @@ function MyTabs() {
         component={Profile} 
         options={{
           tabBarLabel: 'Profile',
-          tabBarLabelStyle: { color: '#008E97',marginTop:5 },
+          tabBarLabelStyle: { color: '#008E97' },
           tabBarIcon: ({ focused }) =>
   <Ionicons
     name={focused ? "person" : "person-outline"} 
@@ -78,7 +81,7 @@ function MyTabs() {
         component={Cart} 
         options={{
           tabBarLabel: 'Cart',
-          tabBarLabelStyle: { color: '#008E97',marginTop:5 },
+          tabBarLabelStyle: { color: '#008E97' },
                  tabBarIcon: ({ focused }) =>
   <Ionicons
     name={focused ? "cart" : "cart-outline"} 
@@ -102,7 +105,7 @@ const App = () => {
   return (
     <NavigationContainer>
       <StatusBar
-      barStyle="dark-content"
+      backgroundColor="#4199c7ff" barStyle='dark-content'
       />
       
       <Stack.Navigator screenOptions={{ headerShown: false }}>
@@ -115,6 +118,7 @@ const App = () => {
             <Stack.Screen name="Confirm" component={ConfirmationScreen} />
             <Stack.Screen name="Order" component={OrderScreen} />
             <Stack.Screen name="ShowOrder" component={ShowOrderScreen} />
+            <Stack.Screen name="Payment" component={PaymentScreen} />
             {user?.email === ADMIN && (
               <>
             <Stack.Screen name="Admin" component={AdminScreen} />

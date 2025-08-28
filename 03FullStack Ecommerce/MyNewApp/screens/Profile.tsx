@@ -74,6 +74,9 @@ const Profile = ({ navigation }) => {
               <Ionicons name="log-out-outline" size={22} color="#fff" />
               <Text style={styles.actionText}>Logout</Text>
             </TouchableOpacity>
+
+
+      
           </View>
         </ScrollView>
       </SafeAreaView>
@@ -83,7 +86,7 @@ const Profile = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   container: {
-    paddingTop: Platform.OS === "android" ? 5 : 0,
+    paddingTop: Platform.OS === "android" ? 0 : 0,
     flex: 1,
     backgroundColor: "#fdfbfbec",
   },

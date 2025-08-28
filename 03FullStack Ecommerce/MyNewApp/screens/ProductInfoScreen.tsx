@@ -21,7 +21,6 @@ const ProductInfoScreen = ({ navigation, route }) => {
 
   const [addedToCart,setAddedToCart]=useState()
 const {addToCart,cart} =useCartStore()
-console.log(cart)
 
 
 const handler=(item)=>{
@@ -55,68 +54,77 @@ const offer = item.offer
   };
   return (
     <ScrollView
-      style={{ marginTop: 25, flex: 1, backgroundColor: 'white' }}
+      style={{ marginTop: 2, flex: 1, backgroundColor: 'white' }}
       showsVerticalScrollIndicator={false}
     >
 
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
         {item.carouselImages.map((item, index) => (
-          <ImageBackground
-            style={{ width, height, marginTop: 25, resizeMode: 'contain' }}
-            key={index}
-            source={{ uri: item }}
-          >
-            <View
-              style={{
-                padding: 10,
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-              }}
-            >
-              {offer && (
- <View
-                style={{
-                  width: 40,
-                  height: 40,
-                  borderRadius: 20,
-                  flexDirection: 'row',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  backgroundColor: '#C60C30',
-                }}
-              >
-                <Text
-                  style={{
-                    textAlign: 'center',
-                    color: 'white',
-                    fontWeight: '700',
-                    fontSize: 12,
-                  }}
-                >
-                  {offer} off
-                </Text>
-              </View>
-              )}
-             
-              <TouchableOpacity onPress={onShare}>
-        <View
+
+<ImageBackground
+  key={index}
+  source={{ uri: item }}
+  style={{
+    width: width,
+    height: height,
+    marginTop: 25,
+    resizeMode: 'cover', 
+    borderRadius: 10,
+    overflow: 'hidden',
+  }}
+>
+  <View
+    style={{
+      padding: 10,
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'flex-start',
+    }}
+  >
+    {/* Offer Badge */}
+    {offer && (
+      <View
+        style={{
+          minWidth: 40,
+          height: 40,
+          paddingHorizontal: 8,
+          borderRadius: 20,
+          justifyContent: 'center',
+          alignItems: 'center',
+          backgroundColor: '#C60C30',
+        }}
+      >
+        <Text
           style={{
-            width: 40,
-            height: 40,
-            borderRadius: 20,
-            flexDirection: 'row',
-            justifyContent: 'center',
-            alignItems: 'center',
-            backgroundColor: '#E0E0E0',
+            textAlign: 'center',
+            color: 'white',
+            fontWeight: '700',
+            fontSize: 12,
           }}
         >
-          <Ionicons name="share-social" size={25} color="black" />
-        </View>
-      </TouchableOpacity>
-            </View>
+          {offer}% OFF
+        </Text>
+      </View>
+    )}
 
-          
-          </ImageBackground>
+    {/* Share Button */}
+    <TouchableOpacity onPress={onShare}>
+      <View
+        style={{
+          width: 40,
+          height: 40,
+          borderRadius: 20,
+          justifyContent: 'center',
+          alignItems: 'center',
+          backgroundColor: '#E0E0E0',
+        }}
+      >
+        <Ionicons name="share-social" size={22} color="black" />
+      </View>
+    </TouchableOpacity>
+  </View>
+</ImageBackground>
+
         ))}
       </ScrollView>
 
@@ -185,7 +193,9 @@ const offer = item.offer
         )}
       </Pressable>
 
-        <Pressable style={{backgroundColor:'#FFAC1C',padding:10,justifyContent:'center',alignItems:'center',
+        <Pressable
+        onPress={()=>{handler(item),navigation.navigate('Confirm')}}
+        style={{backgroundColor:'#FFAC1C',padding:10,justifyContent:'center',alignItems:'center',
         marginHorizontal:10,marginVertical:10,borderRadius:20
       }}>
         <Text>Buy Now</Text>

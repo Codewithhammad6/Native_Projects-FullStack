@@ -45,11 +45,10 @@ setTimeout(() => {
 };
 
   return (
-    <ScrollView style={{ marginTop: 30 }}>
+    <ScrollView style={{ marginTop: 10,padding:5}}>
       {/* Top bar */}
-      <View style={{ height: 50, backgroundColor: '#4199c7ff' }} />
 
-      <View style={{ marginHorizontal: 10 }}>
+      <View style={{ marginHorizontal: 10 ,marginBottom:40}}>
         <View style={{ paddingVertical: 10 }}>
           <Text style={{ fontSize: 17, fontWeight: 'bold' }}>
             Add a new Address
