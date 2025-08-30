@@ -12,13 +12,16 @@ import {
   Alert,
   Modal,
   FlatList,
-  ActivityIndicator
+  ActivityIndicator,
+  Platform,
+  PermissionsAndroid
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import { launchImageLibrary, launchCamera } from 'react-native-image-picker';
 
 const AddProduct = () => {
   const navigation = useNavigation();
-  const { addProduct, loading } = useProductStore();
+  const { addProduct, loading, uploadImage } = useProductStore();
 
   const [formData, setFormData] = useState({
     title: "",
@@ -36,9 +39,118 @@ const AddProduct = () => {
   const [newImageUrl, setNewImageUrl] = useState("");
   const [imageModalVisible, setImageModalVisible] = useState(false);
   const [editingImageIndex, setEditingImageIndex] = useState(null);
+  const [uploading, setUploading] = useState(false);
 
   const handleChange = (key, value) => {
     setFormData({ ...formData, [key]: value });
+  };
+
+  // Request camera permission for Android
+  const requestCameraPermission = async () => {
+    if (Platform.OS === 'android') {
+      try {
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.CAMERA,
+          {
+            title: "Camera Permission",
+            message: "This app needs access to your camera to take photos.",
+            buttonNeutral: "Ask Me Later",
+            buttonNegative: "Cancel",
+            buttonPositive: "OK"
+          }
+        );
+        return granted === PermissionsAndroid.RESULTS.GRANTED;
+      } catch (err) {
+        console.warn(err);
+        return false;
+      }
+    }
+    return true;
+  };
+
+  // Function to pick image from gallery
+  const pickImage = async () => {
+    try {
+      const options = {
+        mediaType: 'photo',
+        includeBase64: false,
+        maxHeight: 1000,
+        maxWidth: 1000,
+      };
+
+      launchImageLibrary(options, async (response) => {
+        if (response.didCancel) {
+          console.log('User cancelled image picker');
+        } else if (response.error) {
+          console.log('ImagePicker Error: ', response.error);
+          Alert.alert("Error", "Failed to pick image");
+        } else if (response.assets && response.assets.length > 0) {
+          const imageUri = response.assets[0].uri;
+          
+          // Upload image to server
+          setUploading(true);
+          try {
+            const uploadedUrl = await uploadImage(imageUri);
+            if (uploadedUrl) {
+              const updatedImages = [...formData.carouselImages, uploadedUrl];
+              setFormData({ ...formData, carouselImages: updatedImages });
+            }
+          } catch (error) {
+            Alert.alert("Error", "Failed to upload image");
+          }
+          setUploading(false);
+        }
+      });
+    } catch (error) {
+      console.error('Error picking image:', error);
+      Alert.alert("Error", "Failed to pick image");
+    }
+  };
+
+  // Function to take photo with camera
+  const takePhoto = async () => {
+    try {
+      const hasPermission = await requestCameraPermission();
+      if (!hasPermission) {
+        Alert.alert("Permission denied", "Camera permission is required to take photos");
+        return;
+      }
+
+      const options = {
+        mediaType: 'photo',
+        includeBase64: false,
+        maxHeight: 1000,
+        maxWidth: 1000,
+        saveToPhotos: true,
+      };
+
+      launchCamera(options, async (response) => {
+        if (response.didCancel) {
+          console.log('User cancelled camera');
+        } else if (response.error) {
+          console.log('Camera Error: ', response.error);
+          Alert.alert("Error", "Failed to take photo");
+        } else if (response.assets && response.assets.length > 0) {
+          const imageUri = response.assets[0].uri;
+          
+          // Upload image to server
+          setUploading(true);
+          try {
+            const uploadedUrl = await uploadImage(imageUri);
+            if (uploadedUrl) {
+              const updatedImages = [...formData.carouselImages, uploadedUrl];
+              setFormData({ ...formData, carouselImages: updatedImages });
+            }
+          } catch (error) {
+            Alert.alert("Error", "Failed to upload image");
+          }
+          setUploading(false);
+        }
+      });
+    } catch (error) {
+      console.error('Error taking photo:', error);
+      Alert.alert("Error", "Failed to take photo");
+    }
   };
 
   const handleAddImage = () => {
@@ -76,6 +188,12 @@ const AddProduct = () => {
       return;
     }
 
+    // Basic URL validation
+    if (!newImageUrl.startsWith('http')) {
+      Alert.alert("Error", "Please enter a valid image URL starting with http/https");
+      return;
+    }
+
     const updatedImages = [...formData.carouselImages];
     updatedImages[editingImageIndex] = newImageUrl;
     setFormData({ ...formData, carouselImages: updatedImages });
@@ -84,42 +202,54 @@ const AddProduct = () => {
     setImageModalVisible(false);
   };
 
-const handleAdd = async () => {
-  // Validate required fields
-  if (!formData.title || !formData.price || !formData.category) {
-    Alert.alert("Error", "Title, Price, and Category are required fields");
-    return;
-  }
+  const handleAdd = async () => {
+    // Validate required fields
+    if (!formData.title || !formData.price || !formData.category) {
+      Alert.alert("Error", "Title, Price, and Category are required fields");
+      return;
+    }
 
-  // Validate images
-  if (formData.carouselImages.length === 0) {
-    Alert.alert("Error", "Please add at least one product image");
-    return;
-  }
+    // Validate price is a valid number
+    if (isNaN(parseFloat(formData.price))) {
+      Alert.alert("Error", "Please enter a valid price");
+      return;
+    }
 
-  // Prepare data for submission - match backend schema
-  const addData = {
-    title: formData.title.trim(),
-    price: parseFloat(formData.price),
-    oldPrice: formData.oldPrice ? parseFloat(formData.oldPrice) : 0,
-    offer: formData.offer || "",
-    color: formData.color || "",
-    category: formData.category.trim(),
-    size: formData.size || "",
-    trendingDeal: formData.trendingDeal,
-    todayDeal: formData.todayDeal,
-    carouselImages: formData.carouselImages
+    // Validate oldPrice if provided
+    if (formData.oldPrice && isNaN(parseFloat(formData.oldPrice))) {
+      Alert.alert("Error", "Please enter a valid old price");
+      return;
+    }
+
+    // Validate images
+    if (formData.carouselImages.length === 0) {
+      Alert.alert("Error", "Please add at least one product image");
+      return;
+    }
+
+    // Prepare data for submission - match backend schema
+    const addData = {
+      title: formData.title.trim(),
+      price: parseFloat(formData.price),
+      oldPrice: formData.oldPrice ? parseFloat(formData.oldPrice) : 0,
+      offer: formData.offer || "",
+      color: formData.color || "",
+      category: formData.category.trim(),
+      size: formData.size || "",
+      trendingDeal: formData.trendingDeal,
+      todayDeal: formData.todayDeal,
+      carouselImages: formData.carouselImages
+    };
+
+    console.log("Final data being sent to store:", JSON.stringify(addData, null, 2));
+
+    const success = await addProduct(addData);
+
+    if (success) {
+      Alert.alert("Success", "Product added successfully!");
+      navigation.goBack();
+    }
   };
-
-  console.log("Final data being sent to store:", JSON.stringify(addData, null, 2));
-
-  const success = await addProduct(addData);
-
-  if (success) {
-    Alert.alert("Success", "Product added successfully!");
-    navigation.goBack();
-  }
-};
 
   const renderCarouselImage = ({ item, index }) => (
     <View style={styles.imageItem}>
@@ -160,7 +290,6 @@ const handleAdd = async () => {
         keyboardType="numeric"
         placeholder="Current Price"
         placeholderTextColor={"gray"}
-
       />
       <Text style={styles.sectionHeader}>Old Pricing (optional)</Text>
       <TextInput
@@ -170,7 +299,6 @@ const handleAdd = async () => {
         keyboardType="numeric"
         placeholder="Original Price (optional)"
         placeholderTextColor={"gray"}
-
       />
       <Text style={styles.sectionHeader}>Offer (optional)</Text>
       <TextInput
@@ -179,13 +307,12 @@ const handleAdd = async () => {
         onChangeText={(t) => handleChange("offer", t)}
         placeholder="Offer Percentage (e.g., 25%)"
         placeholderTextColor={"gray"}
-
       />
 
       <Text style={styles.sectionHeader}>Product Category</Text>
       <View>
-        <Text style={{fontWeight:500,fontSize:13}}>Popular categories :</Text>
-        <Text style={{marginBottom:4,fontSize:11}}>Men , Jewelery , Ladies , Home , Deals , Electronics , Mobiles , Fashion</Text>
+        <Text style={{fontWeight: '500', fontSize: 13}}>Popular categories :</Text>
+        <Text style={{marginBottom: 4, fontSize: 11}}>Men , Jewelery , Ladies , Home , Deals , Electronics , Mobiles , Fashion</Text>
       </View>
       <TextInput
         style={styles.input}
@@ -193,7 +320,6 @@ const handleAdd = async () => {
         onChangeText={(t) => handleChange("category", t)}
         placeholder="Category"
         placeholderTextColor={"gray"}
-
       />
       <Text style={styles.sectionHeader}>Color</Text>
       <TextInput
@@ -202,7 +328,6 @@ const handleAdd = async () => {
         onChangeText={(t) => handleChange("color", t)}
         placeholder="Color"
         placeholderTextColor={"gray"}
-
       />
       <Text style={styles.sectionHeader}>Size</Text>
       <TextInput
@@ -211,7 +336,6 @@ const handleAdd = async () => {
         onChangeText={(t) => handleChange("size", t)}
         placeholder="Size"
         placeholderTextColor={"gray"}
-
       />
 
       <Text style={styles.sectionHeader}>Deal Status</Text>
@@ -287,12 +411,30 @@ const handleAdd = async () => {
         <Text style={styles.noImagesText}>No images added yet</Text>
       )}
 
+      {/* Upload buttons */}
+      <View style={styles.uploadButtonsContainer}>
+        <TouchableOpacity style={styles.uploadButton} onPress={pickImage} disabled={uploading}>
+          {uploading ? (
+            <ActivityIndicator color="white" />
+          ) : (
+            <Text style={styles.uploadButtonText}>Choose from Gallery</Text>
+          )}
+        </TouchableOpacity>
+        
+        <TouchableOpacity style={styles.uploadButton} onPress={takePhoto} disabled={uploading}>
+          <Text style={styles.uploadButtonText}>Take Photo</Text>
+        </TouchableOpacity>
+      </View>
+
+      <Text style={styles.orText}>OR</Text>
+
       <View style={styles.addImageContainer}>
         <TextInput
           style={[styles.input, styles.flexGrow]}
           value={newImageUrl}
           onChangeText={setNewImageUrl}
           placeholder="Enter image URL"
+          placeholderTextColor={"gray"}
         />
         <TouchableOpacity
           style={styles.addButton}
@@ -338,6 +480,7 @@ const handleAdd = async () => {
               value={newImageUrl}
               onChangeText={setNewImageUrl}
               placeholder="Enter image URL"
+              placeholderTextColor={"gray"}
             />
             <View style={styles.modalButtons}>
               <Button title="Update" onPress={handleUpdateImage} />
@@ -353,7 +496,7 @@ const handleAdd = async () => {
 const styles = StyleSheet.create({
   container: { 
     padding: 15,
-    marginTop:25,
+    marginTop: 25,
     backgroundColor: '#fff',
     flex: 1,
   },
@@ -500,6 +643,30 @@ const styles = StyleSheet.create({
     color: "#999",
     marginVertical: 10,
     fontStyle: "italic",
+  },
+  uploadButtonsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 15,
+  },
+  uploadButton: {
+    backgroundColor: '#2196F3',
+    padding: 10,
+    borderRadius: 8,
+    flex: 1,
+    marginHorizontal: 5,
+    alignItems: 'center',
+  },
+  uploadButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize:12
+  },
+  orText: {
+    textAlign: 'center',
+    marginVertical: 10,
+    fontWeight: 'bold',
+    color: '#666',
   },
 });
 

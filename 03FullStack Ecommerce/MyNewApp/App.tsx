@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { NavigationContainer } from '@react-navigation/native';
+import React, { useCallback, useEffect } from 'react';
+import { NavigationContainer, useFocusEffect } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { ModalPortal } from "react-native-modals";
@@ -37,6 +37,7 @@ import ForgetPasswordScreen from './screens/ForgetPasswordScreen.tsx';
 import ResetKeyScreen from './screens/ResetKeyScreen.tsx';
 import NewPasswordScreen from './screens/NewPasswordScreen.tsx';
 import PaymentScreen from './screens/PaymentScreen.tsx';
+import VerifyEmailScreen from './screens/VerifyEmailScreen.tsx';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -101,6 +102,7 @@ const App = () => {
     getUser();
   }, []);
 
+  
 
   return (
     <NavigationContainer>
@@ -109,6 +111,7 @@ const App = () => {
       />
       
       <Stack.Navigator screenOptions={{ headerShown: false }}>
+            
         {isAuth ? (
           <>
             <Stack.Screen name="Main" component={MyTabs} />
@@ -144,8 +147,10 @@ const App = () => {
             <Stack.Screen name="Forgot" component={ForgetPasswordScreen} />
             <Stack.Screen name="Reset" component={ResetKeyScreen} />
             <Stack.Screen name="NewPassword" component={NewPasswordScreen} />
+            <Stack.Screen name="VerifyEmail" component={VerifyEmailScreen} />
           </>
-        )}
+          )}
+          
       </Stack.Navigator>
     <ModalPortal />
       <Toast />

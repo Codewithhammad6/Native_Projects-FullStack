@@ -1,5 +1,4 @@
 import express from "express";
-import dotenv from "dotenv";
 import cors from "cors";
 import { connectDB } from "./database/dbConnection.js"; 
 import cookieParser from "cookie-parser";
@@ -9,22 +8,38 @@ import orderRoute from "./routes/orderRoute.js";
 import productRoute from "./routes/productRoute.js";
 import { removeUnverifiedAccounts } from "./automation/removeUnverifiedUser.js";
 import crypto from "crypto";
+import path from "path";
+import dotenv from "dotenv";
 
 dotenv.config();
-
 export const app = express();
 
-// Middleware
+
+const allowedOrigins = [
+  "http://localhost:5000",
+  "http://10.0.2.2:19000",
+  "http://192.168.100.12:19000",
+  "https://project-production-2420.up.railway.app",
+];
+
 app.use(
   cors({
-     origin: [process.env.FRONTEND_URL],
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })
 );
+
 app.use(cookieParser())
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
 removeUnverifiedAccounts()
 connectDB();

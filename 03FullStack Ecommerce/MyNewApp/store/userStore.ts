@@ -18,7 +18,7 @@ const userStore = create((set) => ({
         isAuth: true,
       });
     } catch (error) {
-      Alert.alert(error?.response?.data?.message || "Failed to fetch user");
+      console.log(error?.response?.data?.message || "Failed to fetch user")
       set({ isAuth: false, user: null });
       throw error;
     } finally {
@@ -37,7 +37,7 @@ const userStore = create((set) => ({
       [
         {
           text: "OK",
-          onPress: () => navigation.navigate("Login"),
+          onPress: () => navigation.navigate("VerifyEmail"),
         },
       ]
     );
@@ -123,6 +123,54 @@ Alert.alert(
       set({ loading: false });
     }
   },
+
+
+
+
+// In your userStore.ts - Fix the Verify function
+Verify: async (code, navigation) => {
+  try {
+    set({ loading: true });
+    
+    // Send the code in the request body properly
+    const { data } = await axiosInstance.post("/user/verifyEmail", code);
+    
+    // Update user state
+    set({ 
+      user: data.user, 
+      isAuth: true 
+    });
+
+    // Show success alert and navigate
+    Alert.alert(
+      "Success",
+      "Email verified successfully!",
+      [
+        {
+          text: "OK",
+          onPress: () => {
+            console.log("Navigating to Home");
+            navigation.navigate('Home');
+          }
+        },
+      ]
+    );
+    
+    return data;
+  } catch (error) {
+    console.log("Verification error:", error);
+    Alert.alert("Error", error?.response?.data?.message || "Verification failed");
+    throw error;
+  } finally {
+    set({ loading: false });
+  }
+},
+
+
+
+
+
+
 
 //sendNew password
 newPassword: async (password,code,navigation) => {

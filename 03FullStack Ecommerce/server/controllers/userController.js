@@ -8,7 +8,6 @@ dotenv.config();
 import { sendToken } from "../utils/sendToken.js";
 import Order from '../models/orderModel.js'
 import mongoose from "mongoose";
-import { log } from "console";
 
 
 // REGISTER
@@ -34,7 +33,7 @@ export const register = catchAsyncError(async (req, res, next) => {
   const newUser = new User({ name, email, password });
 
   // generate and store token
-  const verificationToken = crypto.randomBytes(20).toString("hex");
+  const verificationToken = newUser.generateCode();
   newUser.verificationToken = verificationToken;
 
   await newUser.save();
@@ -62,38 +61,62 @@ const sendVerificationEmail = async (email, verificationToken) => {
     },
   });
 
-  const verifyUrl = `${process.env.APP_BASE_URL}/api/user/verify/${verificationToken}`;
+const mailOptions = {
+  from: process.env.MAIL_FROM || `"HL" <${process.env.SMTP_USER}>`,
+  to: email,
+  subject: "✨ Verify your email address",
+ html: `
+       <div style="font-family: Arial, sans-serif; background-color:#f4f4f4; padding:30px;">
+        <div style="max-width:600px; margin:auto; background:#ffffff; border-radius:8px; box-shadow:0 4px 10px rgba(0,0,0,0.1); padding:20px;">
+          
+          <div style="text-align:center; margin-bottom:20px;">
+            <h1 style="color:#4CAF50; margin:0;">HL</h1>
+            <p style="color:#555; font-size:16px; margin-top:5px;">Secure Email Verification</p>
+          </div>
 
-  const mailOptions = {
-    from: process.env.MAIL_FROM || `"HL" <${process.env.SMTP_USER}>`,
-    to: email,
-    subject: "Verify your email",
-    html: `
-      <div style="font-family:Arial;padding:20px">
-        <h2>Welcome!</h2>
-        <p>Please verify your email by clicking below:</p>
-        <p>
-          <a href="${verifyUrl}" style="background:#000;color:#fff;padding:10px 16px;border-radius:5px;text-decoration:none">
-            Verify Email
-          </a>
-        </p>
-        <p>Or copy this link: ${verifyUrl}</p>
+          <p style="font-size:16px; color:#333;">Hello,</p>
+          <p style="font-size:15px; color:#555; line-height:1.6;">
+            We received a request to verify your email address. Please use the following
+            <strong style="color:#4CAF50;">verification code</strong>:
+          </p>
+
+          <div style="text-align:center; margin:30px 0;">
+            <span style="display:inline-block; background:#4CAF50; color:#fff; font-size:24px; font-weight:bold; letter-spacing:3px; padding:15px 25px; border-radius:8px;">
+              ${verificationToken}
+            </span>
+          </div>
+
+          <p style="font-size:14px; color:#777; line-height:1.5;">
+            If you didn’t request this, you can safely ignore this email.
+          </p>
+
+          <hr style="margin:25px 0; border:none; border-top:1px solid #eee;">
+
+          <p style="font-size:13px; color:#999; text-align:center;">
+            &copy; ${new Date().getFullYear()} HL. All rights reserved.
+          </p>
+        </div>
       </div>
     `,
-    text: `Verify your email: ${verifyUrl}`,
-  };
+  text: `Welcome to HL! Please verify your email: ${verificationToken}`,
+};
+
 
   await transporter.sendMail(mailOptions);
 };
 
-// VERIFY EMAIL (via token link)
+// VERIFY EMAIL 
 export const verifyEmail = catchAsyncError(async (req, res, next) => {
-  const token = req.params.token;
+ const {code} = req.body;
+console.log(code);
 
   // Find user with given token
-  const user = await User.findOne({ verificationToken: token });
+  const user = await User.findOne({ verificationToken: code });
 
   if (!user) {
+    return next(new ErrorHandler("Invalid verification token", 400));
+  }
+   if (user.verificationToken !== code) {
     return next(new ErrorHandler("Invalid verification token", 400));
   }
 
@@ -102,8 +125,7 @@ export const verifyEmail = catchAsyncError(async (req, res, next) => {
 
   await user.save();
 
-  res.status(200).json({ message: "Email verified successfully" });
-  sendToken(user, 200, "User Login successfully.", res);
+   sendToken(user, 200, "successfully.", res);
 });
 
 // LOGIN

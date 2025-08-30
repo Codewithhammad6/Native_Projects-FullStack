@@ -71,7 +71,7 @@ setAddresses((prev) => prev.filter((addr) => addr._id !== id));
             <TextInput
               placeholder="Search by name"
               placeholderTextColor="#A9A9A9"
-              style={{ fontSize: 16, flex: 1, marginLeft: 6, color: '#000' }}
+              style={{ fontSize: 16, flex: 1, marginLeft: 6,paddingBottom:6, color: '#000' }}
               value={searchQuery}
               onChangeText={(text) => setSearchQuery(text)}
             />

@@ -39,7 +39,7 @@ const ShowOrderScreen = ({ route }) => {
     <View style={styles.card}>
       {/* Order Header */}
       <Text style={styles.title}>Order #{index + 1}</Text>
-      <View style={{justifyContent:'space-between',flexDirection:'row'}}>
+      <View style={{justifyContent:'space-between',flexDirection:'column-reverse'}}>
       <Text style={styles.subText}>
         Date: {new Date(item.createdAt).toDateString()} - {new Date(item.createdAt).toLocaleTimeString()}
       </Text>
@@ -63,11 +63,11 @@ const ShowOrderScreen = ({ route }) => {
       {/* Total */}
       <Text style={styles.total}>Total: Rs {item.totalPrice}</Text>
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-        <Text style={[styles.subText, { fontSize: 18 }]}>
+        <Text style={[styles.subText, { fontSize: 16 }]}>
           PaymentMethod :
         </Text>
-        <Text style={{ fontSize: 18, color: 'green' }}>
-          {" "}On Delivery ({item.paymentMethod})
+        <Text style={{ fontSize: 16, color: 'green' }}>
+          {" "}({item.paymentMethod})
         </Text>
       </View>
 

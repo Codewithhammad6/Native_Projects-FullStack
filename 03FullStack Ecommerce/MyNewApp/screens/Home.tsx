@@ -28,7 +28,7 @@ const Home = ({ navigation }) => {
   const todayDealProduct = myProducts.filter((product) => product.todayDeal === "yes")
 
   const [open, setOpen] = useState(false);
-  const [category, setCategory] = useState("ladies");
+  const [category, setCategory] = useState("electronics");
   const [items, setItems] = useState([
     { label: "Men's", value: "men" },
     { label: 'jewelery', value: 'jewelery' },

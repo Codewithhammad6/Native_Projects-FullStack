@@ -27,7 +27,9 @@ const productSchema = new mongoose.Schema({
   carouselImages: [
     {
       type: String,
+      required: true,
     },
+
   ],
   color: {
     type: String,
@@ -53,6 +55,10 @@ const productSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+    imagePublicIds: [{
+    type: String
+  }]
+
 });
 
 const Product = mongoose.model("Product", productSchema);

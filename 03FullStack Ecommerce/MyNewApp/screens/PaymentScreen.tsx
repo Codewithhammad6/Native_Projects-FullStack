@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import axiosInstance from '../utils/axiosInstance.ts';
+import { NUMBER } from '@env';
 
 const PaymentScreen = ({ navigation, route }) => {
   const { cart, total, selectedAddress } = route.params;
@@ -25,7 +26,7 @@ const PaymentScreen = ({ navigation, route }) => {
 
   // Open WhatsApp with customer support number
   const openWhatsApp = () => {
-    const phoneNumber = '03000000000'; 
+    const phoneNumber = NUMBER; 
     let url = '';
     
     if (Platform.OS === 'android') {

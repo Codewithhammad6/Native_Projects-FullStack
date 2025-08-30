@@ -25,7 +25,7 @@ const Profile = ({ navigation }) => {
           <View style={styles.header}>
             <View style={styles.brandRow}>
               <Text style={styles.brandHL}>HL</Text>
-              <Text style={styles.brandDotCom}>.com</Text>
+              <Text style={styles.brandDotCom}> Mart</Text>
             </View>
             <View style={styles.avatar}>
               <Ionicons name="person" size={28} color="#4199c7ff" />
@@ -109,6 +109,7 @@ const styles = StyleSheet.create({
   },
   brandDotCom: {
     fontSize: 20,
+    marginTop:2,
     fontWeight: "500",
     color: "#fff",
   },
