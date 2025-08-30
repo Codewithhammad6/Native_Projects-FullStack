@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import axiosInstance from '../utils/axiosInstance.ts';
 import { Alert } from 'react-native';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const userStore = create((set) => ({
   user: null,
@@ -56,6 +57,13 @@ const userStore = create((set) => ({
       set({ loading: true });
       const { data } = await axiosInstance.post("/user/login", formData);
 
+
+// Save token & user in local storage
+    await AsyncStorage.setItem("token", data.token);
+    await AsyncStorage.setItem("user", JSON.stringify(data.user));
+
+
+
       set({
         user: data.user,
         isAuth: true,
@@ -73,6 +81,21 @@ const userStore = create((set) => ({
   },
 
 
+initAuth : async () => {
+  try {
+    const token = await AsyncStorage.getItem("token");
+    const storedUser = await AsyncStorage.getItem("user");
+
+    if (token && storedUser) {
+      set({
+        user: JSON.parse(storedUser),
+        isAuth: true,
+      });
+    }
+  } catch (error) {
+    console.log("Auth init error:", error);
+  }
+},
 
 //forgot password
 forgot: async (email,navigation) => {
@@ -135,12 +158,15 @@ Verify: async (code, navigation) => {
     // Send the code in the request body properly
     const { data } = await axiosInstance.post("/user/verifyEmail", code);
     
-    // Update user state
+    //  Save token & user in AsyncStorage
+    await AsyncStorage.setItem("token", data.token);
+    await AsyncStorage.setItem("user", JSON.stringify(data.user));
+    
+    // Update state
     set({ 
       user: data.user, 
       isAuth: true 
     });
-
     // Show success alert and navigate
     Alert.alert(
       "Success",
@@ -211,6 +237,9 @@ Alert.alert(
     try {
       set({ loading: true });
       await axiosInstance.get("/user/logout", { withCredentials: true });
+  
+      await AsyncStorage.removeItem("token");
+    await AsyncStorage.removeItem("user");
 
       set({
         user: null,
@@ -251,7 +280,7 @@ getAddresses: async () => {
     const { data } = await axiosInstance.get("/user/getAddresses");
     return data.addresses;
   } catch (error) {
-    Alert.alert(error?.response?.data?.message || "Address geting failed");
+    console.log(error?.response?.data?.message || "Address geting failed")
     throw error;
   } finally {
     set({ loading: false });

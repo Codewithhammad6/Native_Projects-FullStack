@@ -1,5 +1,5 @@
-import React, { useCallback, useEffect } from 'react';
-import { NavigationContainer, useFocusEffect } from '@react-navigation/native';
+import React, { useEffect } from 'react';
+import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { ModalPortal } from "react-native-modals";
@@ -8,7 +8,6 @@ import Register from './screens/Register.tsx';
 import Home from './screens/Home.tsx';
 import Profile from './screens/Profile.tsx';
 import Ionicons from "react-native-vector-icons/Ionicons";
-
 import userStore from './store/userStore.ts';
 import Cart from './screens/Cart.tsx';
 import Toast from 'react-native-toast-message';
@@ -96,12 +95,17 @@ function MyTabs() {
 }
 
 const App = () => {
-  const { isAuth, getUser,user } = userStore();
+  const { isAuth, getUser,user,initAuth } = userStore();
 
-  useEffect(() => {
-    getUser();
-  }, []);
+useEffect(() => {
+  const checkAuth = async () => {
+    await initAuth();  // wait for AsyncStorage
+      };
+  checkAuth();
+}, []);
 
+  
+  
   
 
   return (
